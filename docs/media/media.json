@@ -1,0 +1,92 @@
+{
+  "app": "aws-control",
+  "captured_at": "2026-11-08T10:51:48Z",
+  "app_commit": "cc4599e804d5e0ebe734c51284db54a1249101ef",
+  "kirocrew_commit": "6d07df11cfb64f4c3fda0466165c7a0ba3efe748",
+  "kirocrew_tree_dirty": true,
+  "gateway": "isolated temporary home, approval=reads; a freshly seeded gateway for the stub screenshots, one for the live ones and one for the walkthrough",
+  "data": "fictional, seeded through the app's HTTP API (capture/scenes.json)",
+  "agent_backend": {
+    "live": [],
+    "live_model": null,
+    "stub": "Kiro Crew's offline stub ACP backend (capture/stub_backend.py) for every other scene; no chat reply is shown from it",
+    "credit_reading": "the browser answers the top bar's credit readout (/api/sessions/usage) with \"no reading\", so no account balance or email can be shown"
+  },
+  "note": "The isolated gateway served this repository's own copy of the app: setup installed it from this checkout (POST /api/apps/install), trusted it and enabled it, and every picture shows its committed bundle (ui/dist/index.mjs) and backend. Kiro Crew still ships a built-in aws-control and refuses a second install under the same name, so the Kiro Crew tree the capture ran on is the commit the tests pin with only the built-in copy removed (src/kiro_crew/apps/builtins/aws_control and its BUILTIN_NAMES row); kirocrew_tree_dirty records that. AWS was a local stand-in: the gateway's AWS CLI pointed at a moto server on loopback (AWS_ENDPOINT_URL) and at a fictional AWS config with three demo profiles, so every account id, bucket, file and figure shown is fictional and no request reached AWS.",
+  "data_notes": [
+    "The two accounts carry the AWS documentation's example account ids, minted in the local stand-in; the lab-sso profile's sign-in portal is an example.com address and never signs in, which is why it shows reconnect guidance.",
+    "The stand-in has no billing data, so the Usage pane's spend reads zero.",
+    "Dates are the capture day's, stamped by the gateway's clock."
+  ],
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "device_scale": 2,
+  "screenshots": [
+    {
+      "file": "hero-dark.png",
+      "name": "hero",
+      "theme": "dark",
+      "bytes": 317096,
+      "width": 1600,
+      "height": 1000,
+      "alt": "AWS Control's overview for the demo account: three registered accounts, two of three keys healthy, the drive's size, this month's spend, one share link, and both paid services confirmed"
+    },
+    {
+      "file": "hero-light.png",
+      "name": "hero",
+      "theme": "light",
+      "bytes": 297066,
+      "width": 1600,
+      "height": 1000,
+      "alt": "AWS Control's overview for the demo account: three registered accounts, two of three keys healthy, the drive's size, this month's spend, one share link, and both paid services confirmed"
+    },
+    {
+      "file": "use-case-accounts-light.png",
+      "name": "use-case-accounts",
+      "theme": "light",
+      "bytes": 222404,
+      "width": 1600,
+      "height": 1000,
+      "alt": "The Accounts pane with the lab-sso profile expanded: its health is unknown because it has no single sign-on session yet, and the Reconnect panel shows the aws sso login command to run"
+    },
+    {
+      "file": "use-case-drive-light.png",
+      "name": "use-case-drive",
+      "theme": "light",
+      "bytes": 179372,
+      "width": 1600,
+      "height": 1000,
+      "alt": "The Files pane open on the trips folder, with the Lisbon itinerary previewed as formatted markdown in a dialog"
+    },
+    {
+      "file": "use-case-share-light.png",
+      "name": "use-case-share",
+      "theme": "light",
+      "bytes": 169337,
+      "width": 1600,
+      "height": 1000,
+      "alt": "The share dialog for the Lisbon itinerary: the link's lifetime is chosen from a fixed set of expiries, with an optional note saying who it is for"
+    }
+  ],
+  "walkthrough": {
+    "shortened_waits_s": [
+      2.4,
+      2.4,
+      3.0
+    ],
+    "mp4": {
+      "file": "walkthrough.mp4",
+      "bytes": 445165
+    },
+    "gif": {
+      "file": "walkthrough.gif",
+      "bytes": 2658181,
+      "width": 960,
+      "fps": 10
+    },
+    "theme": "light",
+    "alt": "A walkthrough: the overview, the trips folder in the drive and a file preview, the share dialog and the list of live links, then the accounts and the reconnect steps for a lapsed sign-in"
+  }
+}

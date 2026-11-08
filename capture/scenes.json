@@ -1,0 +1,387 @@
+{
+  "app": "aws-control",
+  "fixture": "minimal",
+  "locale": "en-US",
+  "timezone": "UTC",
+  "provenance_note": "The isolated gateway served this repository's own copy of the app: setup installed it from this checkout (POST /api/apps/install), trusted it and enabled it, and every picture shows its committed bundle (ui/dist/index.mjs) and backend. Kiro Crew still ships a built-in aws-control and refuses a second install under the same name, so the Kiro Crew tree the capture ran on is the commit the tests pin with only the built-in copy removed (src/kiro_crew/apps/builtins/aws_control and its BUILTIN_NAMES row); kirocrew_tree_dirty records that. AWS was a local stand-in: the gateway's AWS CLI pointed at a moto server on loopback (AWS_ENDPOINT_URL) and at a fictional AWS config with three demo profiles, so every account id, bucket, file and figure shown is fictional and no request reached AWS.",
+  "data_notes": [
+    "The two accounts carry the AWS documentation's example account ids, minted in the local stand-in; the lab-sso profile's sign-in portal is an example.com address and never signs in, which is why it shows reconnect guidance.",
+    "The stand-in has no billing data, so the Usage pane's spend reads zero.",
+    "Dates are the capture day's, stamped by the gateway's clock."
+  ],
+  "init_storage": {
+    "mc-nav": "0"
+  },
+  "ready": "[data-testid='overview-pane']",
+  "forbid_text": [
+    "Loading...",
+    "host_unavailable"
+  ],
+  "setup": [
+    {
+      "name": "install this repository",
+      "method": "POST",
+      "path": "/api/apps/install",
+      "body": {
+        "source": "{{app_root}}"
+      }
+    },
+    {
+      "name": "trust it (it runs its own code)",
+      "method": "POST",
+      "path": "/api/security/trusted-apps/aws-control"
+    },
+    {
+      "name": "turn it on",
+      "method": "POST",
+      "path": "/api/apps/aws-control/enable"
+    },
+    {
+      "name": "retire the host's one-time startup intro",
+      "method": "POST",
+      "path": "/api/feature-videos/feedback",
+      "body": {
+        "id": "crewmates",
+        "status": "dismissed"
+      },
+      "optional": true
+    },
+    {
+      "wait_ms": 1500
+    },
+    {
+      "name": "add the machine's demo profiles",
+      "method": "POST",
+      "path": "/api/apps/aws-control/profiles/register",
+      "body": {
+        "names": [
+          "personal",
+          "team-sandbox",
+          "lab-sso"
+        ]
+      }
+    },
+    {
+      "name": "list the accounts",
+      "method": "GET",
+      "path": "/api/apps/aws-control/accounts?refresh=1"
+    },
+    {
+      "name": "read what the drive would bill",
+      "method": "GET",
+      "path": "/api/apps/aws-control/consent?service=s3",
+      "save": {
+        "s3_profile": "profile",
+        "s3_region": "region",
+        "s3_account": "account"
+      }
+    },
+    {
+      "name": "confirm the drive's storage charges",
+      "method": "POST",
+      "path": "/api/apps/aws-control/consent",
+      "body": {
+        "service": "s3",
+        "expectedProfile": "{{s3_profile}}",
+        "expectedRegion": "{{s3_region}}",
+        "expectedAccount": "{{s3_account}}"
+      }
+    },
+    {
+      "name": "read what the bill view would cost",
+      "method": "GET",
+      "path": "/api/apps/aws-control/consent?service=ce",
+      "save": {
+        "ce_profile": "profile",
+        "ce_region": "region",
+        "ce_account": "account"
+      }
+    },
+    {
+      "name": "confirm the bill view",
+      "method": "POST",
+      "path": "/api/apps/aws-control/consent",
+      "body": {
+        "service": "ce",
+        "expectedProfile": "{{ce_profile}}",
+        "expectedRegion": "{{ce_region}}",
+        "expectedAccount": "{{ce_account}}"
+      }
+    },
+    {
+      "name": "create the drive (confirmed), or find the one an earlier pass created",
+      "method": "POST",
+      "path": "/api/apps/aws-control/drive/{{s3_account}}/bootstrap",
+      "body": {
+        "confirm": true
+      },
+      "expect": [
+        200,
+        409
+      ]
+    },
+    {
+      "name": "a trip plan",
+      "method": "POST",
+      "path": "/api/apps/aws-control/drive/{{s3_account}}/upload?section=drive&key=trips/lisbon-itinerary.md",
+      "text": "# Lisbon, 4 days\n\n- Day 1: Alfama walk, tram 28\n- Day 2: Belém, pastéis\n- Day 3: Sintra day trip\n- Day 4: LX Factory, sunset at Miradouro\n"
+    },
+    {
+      "name": "a budget sheet",
+      "method": "POST",
+      "path": "/api/apps/aws-control/drive/{{s3_account}}/upload?section=drive&key=trips/lisbon-budget.csv",
+      "text": "item,eur\nflights,310\nhotel,420\nfood,180\ntrams,24\n"
+    },
+    {
+      "name": "a recipe",
+      "method": "POST",
+      "path": "/api/apps/aws-control/drive/{{s3_account}}/upload?section=drive&key=recipes/sourdough-schedule.md",
+      "text": "# Sourdough schedule\n\nFeed starter 9:00, mix 13:00, bulk until 18:00, shape, cold proof overnight.\n"
+    },
+    {
+      "name": "release notes draft",
+      "method": "POST",
+      "path": "/api/apps/aws-control/drive/{{s3_account}}/upload?section=drive&key=notes/garden-plan-2027.txt",
+      "text": "Raised bed A: tomatoes, basil. Bed B: beans, chard. Water drip timer 6:30.\n"
+    },
+    {
+      "name": "share the itinerary for a day",
+      "method": "POST",
+      "path": "/api/apps/aws-control/drive/{{s3_account}}/share",
+      "body": {
+        "section": "drive",
+        "key": "trips/lisbon-itinerary.md",
+        "expiresSecs": 86400,
+        "note": "For Ana"
+      },
+      "optional": true
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "hero",
+      "path": "/apps/aws-control",
+      "alt": "AWS Control's overview for the demo account: three registered accounts, two of three keys healthy, the drive's size, this month's spend, one share link, and both paid services confirmed",
+      "ready": "[data-testid='overview-pane']",
+      "settle_ms": 1500
+    },
+    {
+      "name": "use-case-drive",
+      "path": "/apps/aws-control?pane=files",
+      "alt": "The Files pane open on the trips folder, with the Lisbon itinerary previewed as formatted markdown in a dialog",
+      "themes": [
+        "light"
+      ],
+      "ready": "[data-testid='drive-folder']",
+      "steps": [
+        {
+          "click": "text=trips"
+        },
+        {
+          "wait_for": "text=lisbon-itinerary.md"
+        },
+        {
+          "click": "text=lisbon-itinerary.md"
+        },
+        {
+          "wait_for": "text=Lisbon, 4 days"
+        }
+      ],
+      "settle_ms": 1500
+    },
+    {
+      "name": "use-case-share",
+      "path": "/apps/aws-control?pane=files",
+      "alt": "The share dialog for the Lisbon itinerary: the link's lifetime is chosen from a fixed set of expiries, with an optional note saying who it is for",
+      "themes": [
+        "light"
+      ],
+      "ready": "text=lisbon-itinerary.md",
+      "settle_ms": 1500,
+      "steps": [
+        {
+          "click": "[data-testid='drive-more'] >> nth=1"
+        },
+        {
+          "click": "[data-testid='drive-share']"
+        },
+        {
+          "wait_for": "[data-testid='share-dialog']"
+        },
+        {
+          "fill": "[data-testid='share-note']",
+          "value": "For Ana, the Lisbon plan"
+        }
+      ],
+      "_note": "Opens where the drive shot left the Files pane: the folder is the app's own view state, restored per account."
+    },
+    {
+      "name": "use-case-accounts",
+      "path": "/apps/aws-control?pane=accounts",
+      "alt": "The Accounts pane with the lab-sso profile expanded: its health is unknown because it has no single sign-on session yet, and the Reconnect panel shows the aws sso login command to run",
+      "themes": [
+        "light"
+      ],
+      "ready": "[data-testid='accounts-pane']",
+      "steps": [
+        {
+          "click": "[data-testid='accounts-pane'] >> text=lab-sso >> nth=0"
+        },
+        {
+          "wait_for": "[data-testid='reconnect-toggle']"
+        },
+        {
+          "click": "[data-testid='reconnect-toggle']"
+        },
+        {
+          "wait_for": "[data-testid='reconnect-panel']"
+        }
+      ],
+      "settle_ms": 1500
+    }
+  ],
+  "walkthrough": {
+    "name": "walkthrough",
+    "path": "/apps/aws-control",
+    "theme": "light",
+    "alt": "A walkthrough: the overview, the trips folder in the drive and a file preview, the share dialog and the list of live links, then the accounts and the reconnect steps for a lapsed sign-in",
+    "steps": [
+      {
+        "wait_for": "[data-testid='overview-pane']"
+      },
+      {
+        "caption": "Every AWS account on this machine, in one place",
+        "position": "bottom"
+      },
+      {
+        "wait_ms": 2600
+      },
+      {
+        "click": "[data-testid='rail-files']"
+      },
+      {
+        "wait_for": "[data-testid='drive-folder']",
+        "cut": true
+      },
+      {
+        "caption": "A private, encrypted drive in a bucket you own",
+        "position": "bottom"
+      },
+      {
+        "wait_ms": 1500
+      },
+      {
+        "click": "text=trips"
+      },
+      {
+        "wait_for": "text=lisbon-itinerary.md",
+        "cut": true
+      },
+      {
+        "wait_ms": 900
+      },
+      {
+        "click": "text=lisbon-itinerary.md"
+      },
+      {
+        "wait_for": "text=Lisbon, 4 days",
+        "cut": true
+      },
+      {
+        "caption": "Preview a file without downloading it",
+        "position": "bottom"
+      },
+      {
+        "wait_ms": 2600
+      },
+      {
+        "press": "body",
+        "key": "Escape"
+      },
+      {
+        "wait_hidden": "[data-testid='drive-preview-text']"
+      },
+      {
+        "click": "[data-testid='drive-more'] >> nth=1"
+      },
+      {
+        "click": "[data-testid='drive-share']"
+      },
+      {
+        "wait_for": "[data-testid='share-dialog']"
+      },
+      {
+        "caption": "Share links always expire",
+        "position": "bottom"
+      },
+      {
+        "type": "[data-testid='share-note']",
+        "value": "For Ana",
+        "delay_ms": 60
+      },
+      {
+        "wait_ms": 1800
+      },
+      {
+        "click": "[data-testid='share-close']"
+      },
+      {
+        "wait_hidden": "[data-testid='share-dialog']"
+      },
+      {
+        "click": "[data-testid='rail-shares']"
+      },
+      {
+        "caption": "Every live link, with who it is for and when it expires",
+        "position": "bottom"
+      },
+      {
+        "wait_ms": 2400
+      },
+      {
+        "click": "[data-testid='rail-accounts']"
+      },
+      {
+        "wait_for": "[data-testid='accounts-pane']"
+      },
+      {
+        "caption": "A health light for every key",
+        "position": "bottom"
+      },
+      {
+        "wait_ms": 1500
+      },
+      {
+        "click": "[data-testid='accounts-pane'] >> text=lab-sso >> nth=0"
+      },
+      {
+        "wait_for": "[data-testid='reconnect-toggle']"
+      },
+      {
+        "click": "[data-testid='reconnect-toggle']"
+      },
+      {
+        "wait_for": "[data-testid='reconnect-panel']",
+        "cut": true
+      },
+      {
+        "caption": "A lapsed sign-in comes with the command that fixes it",
+        "position": "bottom"
+      },
+      {
+        "wait_ms": 3000
+      },
+      {
+        "caption": "",
+        "position": "bottom"
+      },
+      {
+        "mouse_park": [
+          1300,
+          860
+        ]
+      }
+    ],
+    "tail_ms": 2500
+  }
+}

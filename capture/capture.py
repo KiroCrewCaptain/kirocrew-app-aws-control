@@ -611,11 +611,19 @@ def sign_in(context: Any, gateway: Gateway) -> Any:
     return page
 
 
-def api_call(page: Any, method: str, path: str, body: Any) -> tuple[int, Any]:
+def api_call(page: Any, method: str, path: str, body: Any, text: str | None = None) -> tuple[int, Any]:
+    """One request from inside the signed-in page.
+
+    ``body`` is sent as JSON; ``text`` (a step's ``"text"``) as the raw request body,
+    for an endpoint that takes a file's bytes rather than a JSON document.
+    """
     result = page.evaluate(
-        """async ([method, path, body]) => {
+        """async ([method, path, body, rawBody]) => {
             const init = { method, credentials: 'same-origin', headers: {} };
-            if (body !== null && body !== undefined) {
+            if (rawBody !== null && rawBody !== undefined) {
+              init.headers['Content-Type'] = 'application/octet-stream';
+              init.body = rawBody;
+            } else if (body !== null && body !== undefined) {
               init.headers['Content-Type'] = 'application/json';
               init.body = JSON.stringify(body);
             }
@@ -625,7 +633,7 @@ def api_call(page: Any, method: str, path: str, body: Any) -> tuple[int, Any]:
             try { json = JSON.parse(text); } catch (e) { json = text; }
             return [res.status, json];
         }""",
-        [method, path, body],
+        [method, path, body, text],
     )
     return int(result[0]), result[1]
 
@@ -644,7 +652,8 @@ def run_setup(page: Any, scenes: dict[str, Any], app_root: Path) -> dict[str, An
         path = substitute(step["path"], variables)
         body = substitute(step.get("body"), variables)
         expect = step.get("expect", [200, 201, 204])
-        status, data = api_call(page, method, path, body)
+        text = substitute(step.get("text"), variables)
+        status, data = api_call(page, method, path, body, text)
         if status not in expect:
             if step.get("optional"):
                 log(f"skipped optional step {label}: {method} {path} answered {status}")

@@ -139,7 +139,7 @@ no machine-specific path goes into `scenes.json`:
 | `data_notes` | List of facts about the demo data a reader of `media.json` should know (for example, dates the app stamps itself) |
 | `settle_hidden` | Extra selectors that must be gone before a frame is taken (`.animate-spin` always is) |
 | `theme_api` | Override for the theme switch call (default `PUT /api/config/theme {"mode": "{{theme}}"}`) |
-| `setup` | Ordered HTTP calls: `method`, `path`, `body`, `expect` (status list), `save` (`{"var": "dotted.path.in.response"}`), `optional`; or `{"wait_ms": n}` |
+| `setup` | Ordered HTTP calls: `method`, `path`, `body` (JSON) or `text` (a raw body, for an upload), `expect` (status list), `save` (`{"var": "dotted.path.in.response"}`), `optional`; or `{"wait_ms": n}` |
 | `screenshots` | List of shots (below) |
 | `walkthrough` | One recorded flow (below) |
 
