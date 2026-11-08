@@ -201,9 +201,9 @@ This copy of the app draws a kind icon for each artifact. Open the artifact from
 Files from the drive are never run in Kiro Crew; an HTML file is shown as its
 source. Download it to open it in a browser.
 
-**The page says this Kiro Crew does not provide what AWS Control needs.**
-Your Kiro Crew is older than this app. Update Kiro Crew; until then the page stays
-off.
+**Every pane shows an error after Kiro Crew went back to an older version.**
+This copy needs Kiro Crew 0.13.0 or later, and on an older one it refuses every
+request rather than run half-working. Update Kiro Crew.
 
 ## Development
 
