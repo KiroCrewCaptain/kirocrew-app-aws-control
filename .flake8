@@ -1,2 +1,6 @@
 [flake8]
+# Kiro Crew's own settings, which the built-in was written to: black owns the
+# layout, so the codes it disagrees with are ignored.
+extend-ignore = E203, W503, E501
 max-line-length = 100
+exclude = .git, __pycache__, ui/node_modules

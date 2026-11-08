@@ -13,3 +13,8 @@ app-crons.json
 # pointed somewhere else by hand.
 *.raw.png
 *.webm
+node_modules/
+# The crew image build stages a locally built Kiro Crew wheel here (the Docker
+# build context bind-mounts it). `vendor/` itself is tracked through its .gitkeep;
+# a staged wheel never is.
+crew/runtime/vendor/*.whl

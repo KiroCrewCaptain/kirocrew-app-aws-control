@@ -1,0 +1,204 @@
+{
+  "name": "aws-control",
+  "version": "0.1.0",
+  "displayName": "AWS Control",
+  "description": "Your cloud accounts, in plain language. See every AWS account Kiro Crew can use with a health light per account and matched reconnect guidance, plus an S3-backed cloud drive — files, a cloud artifact library, and backups — with time-boxed share links. Nothing is public unless you say so, and every paid service asks for your confirmation before it can bill you.",
+  "author": "kirocrew",
+  "license": "Apache-2.0",
+  "minKiroCrewVersion": "0.13.0",
+  "defaultEnabled": false,
+  "platform": {
+    "os": [
+      "macos",
+      "linux",
+      "windows"
+    ]
+  },
+  "highlights": [
+    "One health light per account, each with reconnect guidance matched to how the profile authenticates",
+    "Private, encrypted, versioned storage that is created only after you confirm it",
+    "Your cloud artifact library, files, and backups all live on one bucket you own",
+    "Share links always expire — nothing is public unless you say so",
+    "Every paid service is confirmed per account before its first use, and every change is on the record"
+  ],
+  "backend": {
+    "hooks": {
+      "routes": "backend.routes:register_routes",
+      "on_startup": "backend.hooks:on_startup",
+      "on_shutdown": "backend.hooks:on_shutdown"
+    }
+  },
+  "ui": {
+    "entry": "dist/index.mjs",
+    "pages": [
+      {
+        "route": "/apps/aws-control",
+        "label": "AWS Control"
+      }
+    ]
+  },
+  "permissions": {
+    "api": [
+      "/api/apps/aws-control",
+      "/api/apps/aws-control/*"
+    ],
+    "storage": true,
+    "network": true,
+    "jobs": true
+  },
+  "tags": [
+    "aws",
+    "accounts",
+    "cloud-drive",
+    "cost",
+    "governance"
+  ],
+  "iconPath": "assets/icon.png",
+  "heroImage": "assets/hero-light.png",
+  "heroImageDark": "assets/hero-dark.png",
+  "heroImageDetail": "assets/hero-detail-light.png",
+  "heroImageDetailDark": "assets/hero-detail-dark.png",
+  "useCases": [
+    "See every AWS account Kiro Crew can reach, which ones are healthy, and what this month is costing you -- without opening the AWS console."
+  ],
+  "configuration": [
+    "Add an account from the profiles already on this machine, then confirm each paid service once per account before it is first used."
+  ],
+  "screenshots": [
+    "assets/screenshot-main.png"
+  ],
+  "l10n": {
+    "bn": {
+      "displayName": "AWS Control",
+      "description": "আপনার ক্লাউড অ্যাকাউন্টগুলো, সহজ ভাষায়। Kiro Crew ব্যবহার করতে পারে এমন প্রতিটি AWS অ্যাকাউন্ট দেখুন — প্রতিটির জন্য একটি স্বাস্থ্য-আলো এবং তার সাথে মানানসই পুনঃসংযোগের নির্দেশনা, সেই সাথে একটি S3-ভিত্তিক ক্লাউড ড্রাইভ — ফাইল, একটি ক্লাউড আর্টিফ্যাক্ট লাইব্রেরি ও ব্যাকআপ — এবং সময়সীমাবদ্ধ শেয়ার লিঙ্ক। আপনি না বললে কিছুই সর্বজনীন নয়, আর প্রতিটি অর্থপ্রদানকারী পরিষেবা বিল করার আগে আপনার নিশ্চিতকরণ চায়।",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "প্রতিটি অ্যাকাউন্টে একটি করে স্বাস্থ্য-আলো, প্রোফাইল যেভাবে প্রমাণীকরণ করে তার সাথে মানানসই পুনঃসংযোগ নির্দেশনাসহ।",
+        "ব্যক্তিগত, এনক্রিপ্ট করা, সংস্করণযুক্ত সঞ্চয়স্থান যা আপনি নিশ্চিত করার পরেই তৈরি হয়।",
+        "আপনার ক্লাউড আর্টিফ্যাক্ট লাইব্রেরি, ফাইল ও ব্যাকআপ সবই আপনার নিজের একটি বাকেটে থাকে।",
+        "শেয়ার লিঙ্ক সবসময় মেয়াদোত্তীর্ণ হয় — আপনি না বললে কিছুই সর্বজনীন নয়।",
+        "প্রতিটি অর্থপ্রদানকারী পরিষেবা প্রথম ব্যবহারের আগে প্রতি অ্যাকাউন্টে নিশ্চিত করা হয়, আর প্রতিটি পরিবর্তন নথিভুক্ত থাকে।"
+      ]
+    },
+    "de": {
+      "displayName": "AWS Control",
+      "description": "Ihre Cloud-Konten, verständlich erklärt. Sehen Sie jedes AWS-Konto, das Kiro Crew nutzen kann, mit einer Statusanzeige pro Konto und passender Anleitung zum erneuten Verbinden, dazu ein Cloud-Laufwerk auf S3-Basis — Dateien, eine Cloud-Artefaktbibliothek und Sicherungen — mit zeitlich begrenzten Freigabelinks. Nichts ist öffentlich, sofern Sie es nicht ausdrücklich festlegen, und jeder kostenpflichtige Dienst fragt vor jeder Abrechnung nach Ihrer Bestätigung.",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "Eine Statusanzeige pro Konto, jeweils mit einer Anleitung zum erneuten Verbinden, die zur Authentifizierungsart des Profils passt",
+        "Privater, verschlüsselter, versionierter Speicher, der erst nach Ihrer Bestätigung erstellt wird",
+        "Ihre Cloud-Artefaktbibliothek, Dateien und Sicherungen liegen alle in einem Bucket, der Ihnen gehört",
+        "Freigabelinks laufen immer ab — nichts ist öffentlich, sofern Sie es nicht ausdrücklich festlegen",
+        "Jeder kostenpflichtige Dienst wird pro Konto vor der ersten Nutzung bestätigt, und jede Änderung wird dokumentiert"
+      ]
+    },
+    "es": {
+      "displayName": "AWS Control",
+      "description": "Tus cuentas en la nube, en lenguaje claro. Consulta cada cuenta de AWS que Kiro Crew puede usar con un indicador de estado por cuenta y orientación de reconexión adaptada, además de una unidad en la nube respaldada por S3 —archivos, una biblioteca de artefactos en la nube y copias de seguridad— con enlaces para compartir con caducidad. Nada es público salvo que tú lo indiques, y cada servicio de pago solicita tu confirmación antes de poder generarte cargos.",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "Un indicador de estado por cuenta, cada uno con orientación de reconexión adaptada a cómo se autentica el perfil",
+        "Almacenamiento privado, cifrado y con versiones que solo se crea después de que lo confirmes",
+        "Tu biblioteca de artefactos en la nube, tus archivos y tus copias de seguridad viven en un solo bucket que te pertenece",
+        "Los enlaces para compartir siempre caducan: nada es público salvo que tú lo indiques",
+        "Cada servicio de pago se confirma por cuenta antes de su primer uso, y todo cambio queda registrado"
+      ]
+    },
+    "fr": {
+      "displayName": "AWS Control",
+      "description": "Vos comptes cloud, en langage clair. Voyez chaque compte AWS que Kiro Crew peut utiliser, avec un voyant de santé par compte et des conseils de reconnexion adaptés, ainsi qu'un disque cloud sur S3 — fichiers, bibliothèque d'artefacts cloud et sauvegardes — avec des liens de partage à durée limitée. Rien n'est public sauf si vous le décidez, et chaque service payant demande votre confirmation avant de pouvoir vous facturer.",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "Un voyant de santé par compte, chacun avec des conseils de reconnexion adaptés au mode d'authentification du profil",
+        "Un stockage privé, chiffré et versionné, créé uniquement après votre confirmation",
+        "Votre bibliothèque d'artefacts cloud, vos fichiers et vos sauvegardes réunis sur un seul bucket qui vous appartient",
+        "Les liens de partage expirent toujours — rien n'est public sauf si vous le décidez",
+        "Chaque service payant est confirmé par compte avant sa première utilisation, et chaque changement est consigné"
+      ]
+    },
+    "hi": {
+      "displayName": "AWS Control",
+      "description": "क्लाउड खाते, सरल भाषा में। हर उस AWS खाते को देखें जिसे Kiro Crew उपयोग कर सकता है — हर खाते के लिए एक स्वास्थ्य संकेत और उससे मेल खाता पुनः-कनेक्ट मार्गदर्शन, साथ ही S3-आधारित क्लाउड ड्राइव — फ़ाइलें, क्लाउड आर्टिफ़ैक्ट पुस्तकालय और बैकअप — समय-सीमित साझा लिंक के साथ। जब तक स्वयं न कहें तब तक कुछ भी सार्वजनिक नहीं होता, और हर सशुल्क सेवा बिल बनाने से पहले पुष्टि माँगती है।",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "हर खाते के लिए एक स्वास्थ्य संकेत, हर एक के साथ प्रोफ़ाइल की प्रमाणीकरण विधि से मेल खाता पुनः-कनेक्ट मार्गदर्शन।",
+        "निजी, एन्क्रिप्टेड, संस्करण-सहित भंडारण जो पुष्टि करने के बाद ही बनता है।",
+        "क्लाउड आर्टिफ़ैक्ट पुस्तकालय, फ़ाइलें और बैकअप — सब एक ही अपने बकेट पर रहते हैं।",
+        "साझा लिंक हमेशा समाप्त होते हैं — जब तक स्वयं न कहें कुछ भी सार्वजनिक नहीं होता।",
+        "हर सशुल्क सेवा पहली बार उपयोग से पहले प्रति खाता पुष्टि की जाती है, और हर बदलाव रिकॉर्ड पर रहता है।"
+      ]
+    },
+    "it": {
+      "displayName": "AWS Control",
+      "description": "I tuoi account cloud, in parole semplici. Vedi ogni account AWS che Kiro Crew può usare, con una spia di stato per account e indicazioni di riconnessione su misura, oltre a un drive cloud basato su S3 — file, una libreria di artefatti cloud e backup — con link di condivisione a tempo. Nulla è pubblico se non lo decidi tu, e ogni servizio a pagamento chiede la tua conferma prima di poterti addebitare qualcosa.",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "Una spia di stato per account, ciascuna con indicazioni di riconnessione adatte al modo in cui il profilo si autentica",
+        "Spazio di archiviazione privato, cifrato e con versioni, creato solo dopo la tua conferma",
+        "La tua libreria di artefatti cloud, i file e i backup risiedono tutti su un unico bucket di tua proprietà",
+        "I link di condivisione scadono sempre — nulla è pubblico se non lo decidi tu",
+        "Ogni servizio a pagamento è confermato per account prima del primo utilizzo, e ogni modifica è registrata"
+      ]
+    },
+    "ja": {
+      "displayName": "AWS Control",
+      "description": "クラウドアカウントを、わかりやすい言葉で。Kiro Crew が使用できるすべての AWS アカウントを、アカウントごとのヘルスライトと認証方式に合わせた再接続ガイダンスとともに確認できます。さらに、S3 を基盤としたクラウドドライブ（ファイル、クラウドアーティファクトライブラリー、バックアップ）と、期限付きの共有リンクも利用できます。あなたが指定しない限り何も公開されず、課金が発生する有料サービスはすべて、請求前に確認を求めます。",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "アカウントごとに 1 つのヘルスライトを表示し、それぞれにプロファイルの認証方式に合わせた再接続ガイダンスが付きます",
+        "プライベートで暗号化され、バージョン管理されたストレージを、あなたが確認したあとにのみ作成します",
+        "クラウドアーティファクトライブラリー、ファイル、バックアップのすべてが、あなたが所有する 1 つのバケットに保存されます",
+        "共有リンクは必ず期限切れになります。あなたが指定しない限り何も公開されません",
+        "有料サービスはすべて、初回使用前にアカウントごとに確認され、すべての変更が記録されます"
+      ]
+    },
+    "ko": {
+      "displayName": "AWS Control",
+      "description": "여러분의 클라우드 계정을 쉬운 언어로 보여줍니다. Kiro Crew가 사용할 수 있는 모든 AWS 계정을 계정별 상태 표시등과 함께 확인하고, 인증 방식에 맞춘 재연결 안내를 받을 수 있습니다. 또한 S3 기반 클라우드 드라이브(파일, 클라우드 아티팩트 라이브러리, 백업)와 기한이 정해진 공유 링크도 제공합니다. 직접 지정하지 않는 한 어떤 것도 공개되지 않으며, 유료 서비스는 요금이 청구되기 전에 항상 확인을 요청합니다.",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "계정마다 하나의 상태 표시등이 있으며, 프로필의 인증 방식에 맞춘 재연결 안내가 함께 제공됩니다",
+        "확인을 거친 뒤에만 생성되는 비공개·암호화·버전 관리 저장소",
+        "클라우드 아티팩트 라이브러리, 파일, 백업이 모두 사용자가 소유한 하나의 버킷에 저장됩니다",
+        "공유 링크는 항상 만료됩니다 — 직접 지정하지 않는 한 어떤 것도 공개되지 않습니다",
+        "유료 서비스는 계정마다 첫 사용 전에 확인을 거치며, 모든 변경 사항이 기록으로 남습니다"
+      ]
+    },
+    "pt": {
+      "displayName": "AWS Control",
+      "description": "Suas contas de nuvem, em linguagem simples. Veja cada conta AWS que o Kiro Crew pode usar, com um indicador de saúde por conta e orientações de reconexão adequadas, além de um drive de nuvem apoiado no S3 — arquivos, uma biblioteca de artefatos na nuvem e backups — com links de compartilhamento por tempo limitado. Nada é público a menos que você decida, e todo serviço pago pede sua confirmação antes de poder cobrar.",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "Um indicador de saúde por conta, cada um com orientações de reconexão adequadas à forma como o perfil se autentica",
+        "Armazenamento privado, criptografado e versionado, criado somente depois que você confirmar",
+        "Sua biblioteca de artefatos na nuvem, arquivos e backups ficam todos em um único bucket que é seu",
+        "Links de compartilhamento sempre expiram — nada é público a menos que você decida",
+        "Todo serviço pago é confirmado por conta antes do primeiro uso, e toda alteração fica registrada"
+      ]
+    },
+    "ru": {
+      "displayName": "AWS Control",
+      "description": "Ваши облачные аккаунты понятным языком. Просматривайте каждый аккаунт AWS, доступный Kiro Crew, с индикатором состояния для каждого аккаунта и подобранными подсказками по переподключению, а также облачный диск на основе S3 — файлы, облачную библиотеку артефактов и резервные копии — со ссылками с ограниченным сроком действия. Ничто не становится публичным без вашего согласия, и каждая платная услуга запрашивает подтверждение, прежде чем начать списывать средства.",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "Один индикатор состояния на аккаунт, каждый с подсказками по переподключению в зависимости от способа аутентификации профиля",
+        "Приватное, зашифрованное хранилище с версиями, создаваемое только после вашего подтверждения",
+        "Ваша облачная библиотека артефактов, файлы и резервные копии — всё в одном принадлежащем вам бакете",
+        "Ссылки для доступа всегда имеют срок действия — ничто не становится публичным без вашего согласия",
+        "Каждая платная услуга подтверждается для аккаунта перед первым использованием, и каждое изменение фиксируется"
+      ]
+    },
+    "zh-CN": {
+      "displayName": "AWS Control",
+      "description": "用平实的语言呈现你的云账户。查看 Kiro Crew 可用的每一个 AWS 账户，每个账户都配有健康状态指示灯和相应重连指引，还提供由 S3 支持的云端硬盘——文件、云端产物库和备份——并附带限时分享链接。除非你明确同意，否则任何内容都不会公开；每一项付费服务在计费前都会先征求你的确认。",
+      "pageLabel": "AWS Control",
+      "highlights": [
+        "每个账户一盏健康状态指示灯，各自配有与该配置文件认证方式相匹配的重连指引",
+        "私密、加密、带版本的存储，只有在你确认之后才会创建",
+        "你的云端产物库、文件和备份全部存放在一个由你自己拥有的存储桶上",
+        "分享链接始终会过期——除非你明确同意，否则任何内容都不会公开",
+        "每一项付费服务在首次使用前都会按账户逐一确认，且每一次变更都有记录"
+      ]
+    }
+  }
+}
