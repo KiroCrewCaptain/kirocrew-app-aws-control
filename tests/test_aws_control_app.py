@@ -1496,7 +1496,8 @@ class TestLibraryScan:
             version=1,
             description="",
             tags=[],
-            content="aws_secret_access_key = AKIAIOSFODNN7EXAMPLEKEYX",
+            # Split so the fixture line itself is not credential-shaped.
+            content="aws_secret_access_key" + " = " + "AKIA" + "IOSFODNN7EXAMPLEKEYX",
         )
         with (
             mock.patch.object(library, "get_default_store") as store,

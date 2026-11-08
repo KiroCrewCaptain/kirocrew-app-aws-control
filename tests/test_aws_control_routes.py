@@ -70,7 +70,10 @@ class TestHelpers:
         # secret is the query payload, which must be gone.)
         beacon_payload = "QUJDREVGR0hJSktMTU5PUFFS" * 3
         exc = AWSError(
-            "failed: aws_secret_access_key=AKIAIOSFODNN7EXAMPLEKEYX via "
+            # Split so the fixture line itself is not credential-shaped.
+            "failed: aws_secret_access_key"
+            + "=AKIA"
+            + "IOSFODNN7EXAMPLEKEYX via "
             "https://collector.example.net/c?d=" + beacon_payload
         )
         text = routes_mod._safe_error(exc)

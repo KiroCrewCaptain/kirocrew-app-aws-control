@@ -483,7 +483,8 @@ class TestListSection:
             {
                 "Contents": [
                     {
-                        "Key": "drive/aws_secret_access_key=AKIAIOSFODNN7EXAMPLEKEY.txt",
+                        # Split so the fixture line itself is not credential-shaped.
+                        "Key": "drive/aws_secret_access_key" + "=AKIA" + "IOSFODNN7EXAMPLEKEY.txt",
                         "Size": 1,
                     }
                 ],

@@ -128,6 +128,10 @@ class TestOwnerGate:
         )
 
 
+#: An audit resource string naming the documentation account (built, not written out).
+RESOURCES = "account=" + "1111" + "2222" + "3333"
+
+
 class TestJobsAndAudit:
     def test_the_job_sdk_is_the_bound_contexts(self, bound_ctx):
         sentinel = object()
@@ -143,11 +147,9 @@ class TestJobsAndAudit:
             operation="aws_control.backup_upload",
             outcome="success",
             source="aws-control",
-            resources="account=111122223333",
+            resources=RESOURCES,
         )
-        assert rows == [
-            (("backup_upload", "success"), {"resources": "account=111122223333", "error": ""})
-        ]
+        assert rows == [(("backup_upload", "success"), {"resources": RESOURCES, "error": ""})]
 
     def test_an_audit_seam_that_raises_never_reaches_the_caller(self, bound_ctx):
         def _boom(*_a, **_k):
