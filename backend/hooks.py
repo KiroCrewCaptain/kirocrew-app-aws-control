@@ -44,6 +44,27 @@ logger = logging.getLogger(__name__)
 
 _CHECK_INTERVAL_SECS = 30 * 60
 
+#: Finished runs of each backup kind whose record the Job SDK keeps. The nightly
+#: loop adds one a night, and only disabling the app removes them. At or above every
+#: reader's window (the Backup row reads the newest 20 of a kind, ``_jobs/recent``
+#: serves at most 100), so the cap removes nothing a page can show. A backup does
+#: no work after its run finishes, so a status-only cap is safe here.
+_JOB_RECORDS_KEPT = 100
+
+
+def _register_kind(sdk: Any, kind: str) -> None:
+    """Register one backup kind, capping its finished records where the host can.
+
+    A host older than the Job SDK's ``retention`` option raises ``TypeError`` on
+    the keyword before it registers anything, so the kind is registered again
+    without it and keeps every record, as it did before the option existed.
+    """
+    runner = backup_mod.make_job_runner(sdk, kind)
+    try:
+        sdk.register(kind, runner, retention=_JOB_RECORDS_KEPT)
+    except TypeError:
+        sdk.register(kind, runner)
+
 
 def _nightly_setup_failure(account: str, kind: str, exc: BaseException, witness: Any) -> None:
     """Record and audit one scheduled wake that failed BEFORE a run was claimed.
@@ -330,7 +351,7 @@ async def _register_job_runners(ctx: Any) -> None:
         )
         return
     for kind in backup_mod.JOB_KINDS:
-        sdk.register(kind, backup_mod.make_job_runner(sdk, kind))
+        _register_kind(sdk, kind)
     try:
         interrupted = await asyncio.to_thread(sdk.reconcile)
     except Exception:  # noqa: BLE001 — a bad run store must not block enable

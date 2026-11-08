@@ -14,9 +14,13 @@ and `DrivePageTestUtils.tsx`.
 "Gap" means something the built-in gets from Kiro Crew that an installed app has no
 public way to get today. Each gap is a Kiro Crew change, not a change here.
 
-The wheel copy has had no change since that commit, so no fix is waiting to be carried
-over (Kiro Crew's drift guard, #31351, names the commit range to check on the next
-change).
+Every change to the wheel copy since that commit is carried over here, in the table
+below (Kiro Crew's drift guard, #31351, names the commit range to check on the next
+change):
+
+| Kiro Crew change | Files here |
+|---|---|
+| kirodotdev/KiroCrew#33196: both backup kinds register with the Job SDK's `retention=100`, so each keeps at most 100 finished run records; on a host without the option the kind registers uncapped | `backend/hooks.py`, `tests/test_aws_control_hooks.py` |
 
 ## What carried over unchanged
 

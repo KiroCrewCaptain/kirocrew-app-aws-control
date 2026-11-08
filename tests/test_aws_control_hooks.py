@@ -548,3 +548,41 @@ class TestStartupShutdown:
             assert hooks._task is None
 
         _run(_drive())
+
+
+class TestTheBackupKindsCapTheirRecords:
+    """Both backup kinds ask the host's Job SDK to keep at most 100 finished runs."""
+
+    class _Sdk:
+        """A Job SDK whose ``register`` takes ``retention``, recording each call."""
+
+        def __init__(self):
+            self.calls = []
+
+        def register(self, kind, fn, *, cancellable=False, retention=0):
+            self.calls.append((kind, retention))
+
+        def reconcile(self):
+            return 0
+
+    class _OlderSdk(_Sdk):
+        """A host older than the ``retention`` option: the keyword is a TypeError."""
+
+        def register(self, kind, fn, *, cancellable=False):
+            self.calls.append((kind, None))
+
+    def _register(self, sdk):
+        asyncio.run(hooks._register_job_runners(mock.Mock(job=sdk)))
+        return sdk.calls
+
+    def test_both_kinds_register_with_the_cap(self):
+        calls = self._register(self._Sdk())
+        assert calls == [(kind, hooks._JOB_RECORDS_KEPT) for kind in hooks.backup_mod.JOB_KINDS]
+
+    def test_the_cap_is_at_least_every_readers_window(self):
+        # The Backup row reads the newest 20 of a kind; `_jobs/recent` serves 100.
+        assert hooks._JOB_RECORDS_KEPT >= 100
+
+    def test_an_older_host_still_registers_both_kinds(self):
+        calls = self._register(self._OlderSdk())
+        assert calls == [(kind, None) for kind in hooks.backup_mod.JOB_KINDS]
