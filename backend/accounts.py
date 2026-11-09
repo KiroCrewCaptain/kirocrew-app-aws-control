@@ -175,6 +175,18 @@ class AccountView:
         }
 
 
+def aws_cli_is_v1() -> bool:
+    """Whether the gateway's ``aws`` is AWS CLI v1, which has no ``configure list-profiles``.
+
+    Asked only after the profile scan failed, through the same CLI chokepoint the
+    scan ran on, to tell the one cause no retry clears from a scan that may work
+    next time. v1 refuses the listing on every call, and its ``--version`` line
+    starts ``aws-cli/1.``.
+    """
+    rc, out, err = engine.run_aws(["--version"], "")
+    return rc == 0 and ((out or "") + (err or "")).lstrip().startswith("aws-cli/1.")
+
+
 async def classify_profile(name: str) -> str:
     """How ``name`` authenticates, from CLI config reads only.
 

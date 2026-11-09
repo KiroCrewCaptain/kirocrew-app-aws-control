@@ -21,11 +21,15 @@ change):
 | Kiro Crew change | Files here |
 |---|---|
 | kirodotdev/KiroCrew#33196: both backup kinds register with the Job SDK's `retention=100`, so each keeps at most 100 finished run records; on a host without the option the kind registers uncapped | `backend/hooks.py`, `tests/test_aws_control_hooks.py` |
+| kirodotdev/KiroCrew#33304: a failed profile scan on a gateway whose `aws` is AWS CLI v1 (no `configure list-profiles`) answers 501 `unsupported_aws_cli_v1` instead of the retryable 503, and Add accounts names the version with no Try again. `aws_cli_is_v1` asks `aws --version` through the same CLI chokepoint, so it needs no host function newer than the pin | `backend/accounts.py`, `backend/routes_parts/accounts.py`, `ui/src/AwsControlPage.tsx`, `ui/src/types.ts`, `ui/i18n/*.json` (`add_accounts_cli_v1`), `tests/test_aws_control_app_profiles.py`, `ui/tests/AwsControlPage.test.tsx` |
+
+A fix released here bumps the patch version, so an installed copy shows the update.
 
 ## What carried over unchanged
 
-- `app.json` `name` (`aws-control`) and `version` (`0.1.0`), so adoption maps an
-  existing built-in record onto this source one to one; `defaultEnabled` (`false`),
+- `app.json` `name` (`aws-control`) and `version` (`0.1.0` at the port; a fix
+  released here bumps the patch, see above), so adoption maps an existing built-in
+  record onto this source one to one; `defaultEnabled` (`false`),
   `platform`, `permissions` (`api` for `/api/apps/aws-control` and
   `/api/apps/aws-control/*`, `storage`, `network`, `jobs`), and every display field.
   `tests/test_manifest_contract.py` compares them with the built-in's manifest
