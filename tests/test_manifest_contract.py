@@ -188,11 +188,17 @@ class TestTheManifest(unittest.TestCase):
         for key in ("name", "permissions", "defaultEnabled", "platform"):
             with self.subTest(field=key):
                 self.assertEqual(manifest[key], builtin[key])
-        self.assertEqual(manifest["version"], builtin["version"])
         for key in ("agents", "skills", "mcpServers"):
             with self.subTest(absent=key):
                 self.assertNotIn(key, builtin)
                 self.assertNotIn(key, manifest)
+
+    def test_the_version_never_falls_below_the_builtins(self) -> None:
+        """A fix released here bumps the patch so the update badge shows; adoption
+        pins this exact version, so a re-pin carries the wheel copy to it as well."""
+        self.assertGreaterEqual(
+            _semver(_manifest()["version"]), _semver(_builtin()["version"])
+        )
 
     def test_declares_nothing_adoption_cannot_carry(self) -> None:
         manifest = _manifest()
