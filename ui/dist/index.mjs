@@ -2243,6 +2243,31 @@ function QuickTile({ icon, label, count, testId, onClick }) {
 		children: body
 	});
 }
+/**
+* A listing's Load more button. Held with `aria-disabled`, never `disabled`,
+* while the next page loads: the button stays on screen, and disabling the
+* pressed button blurs it to <body>. A ref latches the press synchronously, so
+* a second press that beats the re-render is refused too, while the fetch keeps
+* the default `cancelRefetch` and so still cancels a background refetch of the
+* loaded pages instead of being swallowed by it.
+*/
+function LoadMoreButton({ listQ, testId }) {
+	const inFlight = useRef(false);
+	const onClick = () => {
+		if (inFlight.current || listQ.isFetchingNextPage) return;
+		inFlight.current = true;
+		listQ.fetchNextPage().finally(() => {
+			inFlight.current = false;
+		});
+	};
+	return /* @__PURE__ */ jsx(Btn, {
+		onClick,
+		"aria-disabled": listQ.isFetchingNextPage || void 0,
+		className: "aria-disabled:cursor-not-allowed aria-disabled:opacity-30",
+		"data-testid": testId,
+		children: i18nT("apps.awsControl.console.load_more")
+	});
+}
 // src/host/Trans.tsx
 /**
 * `<Trans>` for the one string the page renders with markup inside it.
@@ -2967,11 +2992,9 @@ function LibrarySection({ account, bucket }) {
 			}),
 			listQ.hasNextPage && /* @__PURE__ */ jsx("div", {
 				className: "mt-2",
-				children: /* @__PURE__ */ jsx(Btn, {
-					onClick: () => listQ.fetchNextPage(),
-					disabled: listQ.isFetchingNextPage,
-					"data-testid": "library-load-more",
-					children: i18nT("apps.awsControl.console.load_more")
+				children: /* @__PURE__ */ jsx(LoadMoreButton, {
+					listQ,
+					testId: "library-load-more"
 				})
 			}),
 			/* @__PURE__ */ jsx(CliDrawer, {
@@ -4295,6 +4318,7 @@ function useDrivePageFiles(account) {
 		if (debouncedQuery) setHighlightKey(null);
 	}, [debouncedQuery]);
 	const commitRename = (fromKey) => {
+		if (renameMut.isPending) return;
 		const name = renameValue;
 		if (!name.trim()) return;
 		if (name === (fromKey.split("/").pop() ?? fromKey)) {
@@ -4826,7 +4850,8 @@ function DriveFilesSearchResults({ pane }) {
 												}),
 												/* @__PURE__ */ jsxs(Btn, {
 													primary: true,
-													disabled: renameMut.isPending || !renameValue.trim(),
+													"aria-disabled": renameMut.isPending || !renameValue.trim() || void 0,
+													className: "aria-disabled:bg-bg-hover aria-disabled:text-muted aria-disabled:border-transparent aria-disabled:shadow-none aria-disabled:opacity-60 aria-disabled:cursor-not-allowed",
 													onClick: () => commitRename(hit.key),
 													"data-testid": "drive-rename-save",
 													children: [/* @__PURE__ */ jsx(Pencil, { size: 13 }), i18nT("apps.awsControl.console.rename")]
@@ -5067,7 +5092,8 @@ function DriveFilesGrid({ pane }) {
 							}),
 							/* @__PURE__ */ jsxs(Btn, {
 								primary: true,
-								disabled: renameMut.isPending || !renameValue.trim(),
+								"aria-disabled": renameMut.isPending || !renameValue.trim() || void 0,
+								className: "aria-disabled:bg-bg-hover aria-disabled:text-muted aria-disabled:border-transparent aria-disabled:shadow-none aria-disabled:opacity-60 aria-disabled:cursor-not-allowed",
 								onClick: () => commitRename(f.key),
 								"data-testid": "drive-grid-rename-save",
 								children: [/* @__PURE__ */ jsx(Pencil, { size: 13 }), i18nT("apps.awsControl.console.rename")]
@@ -5338,7 +5364,8 @@ function DriveFilesTable({ pane }) {
 								}),
 								/* @__PURE__ */ jsxs(Btn, {
 									primary: true,
-									disabled: renameMut.isPending || !renameValue.trim(),
+									"aria-disabled": renameMut.isPending || !renameValue.trim() || void 0,
+									className: "aria-disabled:bg-bg-hover aria-disabled:text-muted aria-disabled:border-transparent aria-disabled:shadow-none aria-disabled:opacity-60 aria-disabled:cursor-not-allowed",
 									onClick: () => commitRename(f.key),
 									"data-testid": "drive-rename-save",
 									children: [/* @__PURE__ */ jsx(Pencil, { size: 13 }), i18nT("apps.awsControl.console.rename")]
@@ -6317,12 +6344,10 @@ function DriveSectionView({ account, bucket }) {
 			!searching && mode === "list" && (folders.length > 0 || files.length > 0) && /* @__PURE__ */ jsx(DriveFilesTable, { pane }),
 			!searching && listQ.hasNextPage && /* @__PURE__ */ jsx("div", {
 				className: "mt-2",
-				children: /* @__PURE__ */ jsx(Btn, {
-					onClick: () => listQ.fetchNextPage(),
-					disabled: listQ.isFetchingNextPage,
-					"data-testid": "drive-load-more",
-					children: i18nT("apps.awsControl.console.load_more")
-				})
+				children: /* @__PURE__ */ jsx(LoadMoreButton, {
+					listQ,
+					testId: "drive-load-more"
+				}, path)
 			}),
 			/* @__PURE__ */ jsx(CliDrawer, {
 				bucket,
@@ -6601,13 +6626,23 @@ function BackupSection({ account }) {
 	});
 	const [editingLabel, setEditingLabel] = useState(false);
 	const [labelDraft, setLabelDraft] = useState("");
+	const labelSaveClaimed = useRef(false);
 	const labelMut = useMutation({
 		mutationFn: (label) => awsControlApi.installLabel(label),
 		onSuccess: () => {
+			labelSaveClaimed.current = false;
 			setEditingLabel(false);
 			invalidate();
+		},
+		onError: () => {
+			labelSaveClaimed.current = false;
 		}
 	});
+	const submitLabel = () => {
+		if (labelSaveClaimed.current) return;
+		labelSaveClaimed.current = true;
+		labelMut.mutate(labelDraft);
+	};
 	const [confirmKey, setConfirmKey] = useState(null);
 	const [showAllArchives, setShowAllArchives] = useState(false);
 	const restoreButtons = useRef(/* @__PURE__ */ new Map());
@@ -6785,8 +6820,9 @@ function BackupSection({ account }) {
 											value: labelDraft,
 											onChange: (e) => setLabelDraft(e.target.value),
 											onKeyDown: (e) => {
-												if (e.key === "Enter") labelMut.mutate(labelDraft);
+												if (e.key === "Enter") submitLabel();
 												if (e.key === "Escape") {
+													labelSaveClaimed.current = false;
 													setEditingLabel(false);
 													labelMut.reset();
 												}
@@ -6798,8 +6834,9 @@ function BackupSection({ account }) {
 										}),
 										/* @__PURE__ */ jsx(Btn, {
 											primary: true,
-											onClick: () => labelMut.mutate(labelDraft),
-											disabled: labelMut.isPending,
+											"aria-disabled": labelMut.isPending || void 0,
+											className: "aria-disabled:bg-bg-hover aria-disabled:text-muted aria-disabled:border-transparent aria-disabled:shadow-none aria-disabled:opacity-60 aria-disabled:cursor-not-allowed",
+											onClick: submitLabel,
 											"data-testid": "backup-install-save",
 											children: i18nT("apps.awsControl.console.backup_install_save")
 										}),
@@ -8392,8 +8429,12 @@ function AccountsPane({ accountsQ, selected, onUse, openAddAccounts = false }) {
 					})
 				}) : void 0,
 				actions: /* @__PURE__ */ jsxs(Btn, {
-					onClick: () => void refreshAccounts(),
-					disabled: accountsQ.isFetching,
+					onClick: () => {
+						if (!accountsQ.isFetching) refreshAccounts();
+					},
+					"aria-disabled": accountsQ.isFetching || void 0,
+					"aria-busy": accountsQ.isFetching || void 0,
+					className: "aria-disabled:opacity-30 aria-disabled:cursor-not-allowed",
 					"data-testid": "refresh",
 					children: [/* @__PURE__ */ jsx(RefreshCw, { className: `h-3.5 w-3.5 ${accountsQ.isFetching ? "animate-spin" : ""}` }), i18nT("apps.awsControl.page.refresh")]
 				})
@@ -8570,8 +8611,12 @@ function OverviewPane({ accountsQ, selected, drive, driveQ, sharesQ, onUse, onOp
 				title: i18nT("apps.awsControl.overview.title"),
 				subtitle: i18nT("apps.awsControl.overview.subtitle"),
 				actions: /* @__PURE__ */ jsxs(Btn, {
-					onClick: refreshAll,
-					disabled: accountsQ.isFetching,
+					onClick: () => {
+						if (!accountsQ.isFetching) refreshAll();
+					},
+					"aria-disabled": accountsQ.isFetching || void 0,
+					"aria-busy": accountsQ.isFetching || void 0,
+					className: "aria-disabled:opacity-30 aria-disabled:cursor-not-allowed",
 					"data-testid": "refresh",
 					children: [/* @__PURE__ */ jsx(RefreshCw, { className: `h-3.5 w-3.5 ${accountsQ.isFetching ? "animate-spin" : ""}` }), i18nT("apps.awsControl.page.refresh")]
 				})
