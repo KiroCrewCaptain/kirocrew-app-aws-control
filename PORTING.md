@@ -245,44 +245,51 @@ the page imported is replaced under `ui/src/host/`:
     raster icon has fixed colours; `"author": "kirocrew"` is attributed on the catalog
     row.
 
-11. **A backup in flight when the app is switched off (suspected).** Disabling or
-    uninstalling unloads the app's modules (`apps/module_loader.unload_app_modules`),
-    which the built-in's never were. In two early runs of the adoption smoke below, a
-    nightly snapshot the adopted copy had just claimed ended `failed` with `No module
-    named '_kirocrew_app_aws-control'` while the run went on to disable and uninstall
-    the app; a backup started by hand on the enabled copy ran to `done`, and the same
-    job loaded in-process outside the gateway did not fail that way. The likeliest
-    cause is a worker thread outliving the unload; no traceback confirmed it. Nothing
-    is lost (the run is recorded as failed), but the reason shown is not the real one.
+11. **A backup in flight when the app is switched off.** Disabling unloads the app's
+    modules (`apps/module_loader.unload_app_modules`), which the built-in's never were.
+    A snapshot started just before a disable fails on both: the built-in's run ends
+    `aws-control is shutting down; upload refused`, the adopted copy's ends `No module
+    named '_kirocrew_app_aws-control'` (reproduced on Kiro Crew `46f62deab7`). Either
+    way nothing is uploaded, and the disable removes the app's job records, so the page
+    shows the same thing after the next enable. Only the reason in the gateway log
+    differs.
 12. **Reinstalling after uninstall on a Kiro Crew that still ships the built-in.**
-    After the adopted copy is uninstalled, installing this repository again from a
-    local path (`kirocrew app install ./clone`, `POST /api/apps/install`) succeeds,
-    but `apps/lifecycle._resolve_hook` and the route loader still resolve
-    `backend.*` to the wheel's `kiro_crew.apps.builtins.aws_control` package
-    (`shipped_builtin_app_root` does not consult the release marker), so route
-    registration fails (`'AppContext' object has no attribute 'router'`) and
-    `on_startup` fails. The App Store reinstall path was not exercised (the
-    catalog was offline in the smoke). This is a Kiro Crew bug, not this
-    repository's.
+    Fixed in Kiro Crew: on `46f62deab7` an App Store reinstall after uninstalling the
+    adopted copy registers every route from the installed tree, `on_startup` runs, and
+    the kept `data/` is read back (the earlier run on `6d07df11cf` failed route
+    registration with `'AppContext' object has no attribute 'router'`).
 
 ## Adoption smoke
 
-On an isolated Kiro Crew (`6d07df11cf`, the built-in present) with
-`KIROCREW_HARNESS_ADOPTION_PINS` naming a local pin for commit `513c4cf` (its
-codeload archive as `harnessArchive`) and the AWS command line tool pointed at a
-local stand-in: the built-in was enabled and given state (three registered
-profiles, an S3 confirmation, a drive, a file, a share link, the nightly backup on,
-an install label); STAGE staged the pin; on the next start APPLY moved the record
-to `origin=registry` at the pinned commit, enabled. The data directory, the secret
-(none), the crons (none), the agents (none), the consent grant and the registered
-profiles were identical; the only new record is the approved grant adoption writes,
-equal to the built-in's declared `api` and nothing else. The legacy `/aws-control`
-route served, the app row carried `legacyNav` `/aws-control` / `Cloud`, the adopted
-backend listed the file, the share and the nightly switch, the consent card's route
-answered `granted`, the three core seams answered from the adopted tree, and a
-manual snapshot backup ran to `done`. An update with the catalog offline was
-refused and changed nothing; disable answered 404 and enable restored the same
-listing; uninstall kept the data. Gaps 11 and 12 came from this run.
+Latest run, on an isolated loopback Kiro Crew at `46f62deab7` (the built-in present,
+its `app.json` version raised to this repository's, as the pin release does) with
+`KIROCREW_HARNESS_ADOPTION_PINS` naming the row `scripts/adoption_pin.py compute
+--min-sdk-level 2` printed for the pinned commit (its codeload archive as
+`harnessArchive`) and the AWS command line tool pointed at a local stand-in:
+
+1. The built-in was enabled and given state: three registered profiles, the `s3` and
+   `ce` confirmations, a drive with one file, a share link, the nightly backup on (it
+   ran once), and an install label.
+2. STAGE staged the pin from the archive; the next start's APPLY moved the record to
+   `origin=registry` at the pinned commit, still enabled. `data/`, the approved grants,
+   the consent grants, the deploy profile registry, the crons, the agent specs and the
+   MCP registrations were byte for byte the same; the built-in has no `.app_secret`
+   and none was created. Besides the swapped tree and the record, the only new state
+   is the trust grant and the adoption marker for the pinned repository.
+3. The `/aws-control` route rendered the adopted bundle in a real browser with the
+   seeded accounts, drive, share link, nightly backup and both confirmations; the
+   app row carried `legacyNav` `/aws-control` / `Cloud`; the host's own consent card
+   (`/api/aws/consent`) answered `granted` through the adopted copy's account policy,
+   and kept answering while the copy was disabled and after it was uninstalled.
+4. With the catalog row switched to this repository at the pinned commit, an update
+   was a no-op (`v0.1.2 -> v0.1.2`, same commit, `data/` unchanged, still adopted),
+   twice. Disable took the routes down and enable brought the same listing back.
+   Uninstall kept `data/` and the name stayed released across a restart; an App Store
+   reinstall (after the trust prompt) came back disabled as every store install does,
+   and on enable served the kept accounts, drive and share link, also after a restart.
+
+The one earlier run, on `6d07df11cf` at commit `513c4cf`, is where gaps 11 and 12
+were first seen.
 
 ## What Kiro Crew keeps doing
 
