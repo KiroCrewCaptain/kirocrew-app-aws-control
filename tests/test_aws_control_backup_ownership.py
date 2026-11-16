@@ -20,6 +20,7 @@ from aws_control_backup_helpers import (
     ARCHIVE_BYTES,
     ARCHIVE_FINGERPRINT,
 )
+from kiro_crew.testing.synthetic_credentials import github_classic
 
 from backend import backup
 
@@ -555,8 +556,10 @@ class TestLabelIsDisplayOnly:
         assert cleaned.startswith("lap") and cleaned.endswith("top")
         assert backup.sanitize_label("") == ""
         assert backup.sanitize_label(12345) == ""
-        leaked = backup.sanitize_label("key AKIAIOSFODNN7EXAMPLE here")
-        assert "AKIAIOSFODNN7EXAMPLE" not in leaked
+        # An AWS key ID is an Identifier with the structured detectors on.
+        secret = github_classic(seed=24)
+        leaked = backup.sanitize_label(f"key {secret} here")
+        assert secret not in leaked
 
     def test_a_published_label_cannot_make_a_foreign_archive_restorable(self):
         # The whole point of the id/label split. A label is a string an install

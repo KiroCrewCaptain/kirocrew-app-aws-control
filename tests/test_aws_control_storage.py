@@ -22,6 +22,7 @@ from kiro_crew import sandbox
 from backend import storage
 from kiro_crew.deploy import engine
 from kiro_crew.deploy.engine import AWSError
+from kiro_crew.testing.synthetic_credentials import aws_secret
 
 
 @contextlib.contextmanager
@@ -479,12 +480,13 @@ class TestListSection:
         # Keys can be authored by console uploads or other tools, so a name
         # embedding a credential must be redacted before it reaches the
         # dashboard — same double-pass discipline as every egress surface.
+        # An AWS secret value is exactly 40 characters of the AWS alphabet.
+        secret = aws_secret(seed=61)
         payload = json.dumps(
             {
                 "Contents": [
                     {
-                        # Split so the fixture line itself is not credential-shaped.
-                        "Key": "drive/aws_secret_access_key" + "=AKIA" + "IOSFODNN7EXAMPLEKEY.txt",
+                        "Key": f"drive/aws_secret_access_key={secret}.txt",
                         "Size": 1,
                     }
                 ],
@@ -492,7 +494,7 @@ class TestListSection:
             }
         )
         result, _ = self._list(payload)
-        assert "AKIAIOSFODNN7EXAMPLEKEY" not in result["files"][0]["key"]
+        assert secret not in result["files"][0]["key"]
 
     def test_empty_body_reads_as_an_empty_page(self):
         # _checked returning "" (or None) must parse as an empty listing, not
