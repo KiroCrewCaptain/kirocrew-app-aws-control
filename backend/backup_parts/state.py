@@ -157,7 +157,9 @@ def _read_state_checked() -> tuple[dict[str, Any], bool]:
         # should be loud rather than folded into "unreadable".
         return {}, False
     try:
-        data = json.loads(raw)
+        # One leading UTF-8 byte-order mark (a Windows "UTF-8 with BOM" save) is
+        # not content; plain `json.loads` would call the whole document corrupt.
+        data = json.loads(raw.removeprefix("\ufeff"))
     except json.JSONDecodeError:
         return {}, False
     if not isinstance(data, dict):
@@ -214,10 +216,12 @@ def _read_state_for_update() -> dict[str, Any]:
     parsed to nothing usable carries nothing to lose. That covers a file which
     DECODED and then failed to parse. Bytes that are not UTF-8 never reached the
     parser, so they are the unreadable kind, not the corrupt kind, and the
-    mutation is abandoned rather than published over them.
+    mutation is abandoned rather than published over them. A leading UTF-8
+    byte-order mark is neither: the document is whole, so it is parsed past the
+    mark and every account carries forward.
     """
     try:
-        data = json.loads(_state_path().read_text(encoding="utf-8"))
+        data = json.loads(_state_path().read_text(encoding="utf-8").removeprefix("\ufeff"))
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
     except UnicodeDecodeError as exc:
