@@ -4772,6 +4772,7 @@ function DriveFilesSearchResults({ pane }) {
 														"aria-label": i18nT("apps.awsControl.console.file_actions"),
 														onPointerDown: rememberMenuOpener,
 														onKeyDown: rememberMenuOpener,
+														onClick: rememberMenuOpener,
 														"data-testid": "drive-search-more",
 														children: /* @__PURE__ */ jsx(MoreHorizontal, { className: "h-3.5 w-3.5" })
 													})
@@ -5000,6 +5001,7 @@ function DriveFilesGrid({ pane }) {
 								"data-testid": "drive-grid-more",
 								onPointerDown: rememberMenuOpener,
 								onKeyDown: rememberMenuOpener,
+								onClick: rememberMenuOpener,
 								children: /* @__PURE__ */ jsx(MoreHorizontal, { className: "h-3.5 w-3.5" })
 							})
 						}), /* @__PURE__ */ jsxs(DropdownMenuContent, {
@@ -5290,6 +5292,7 @@ function DriveFilesTable({ pane }) {
 											"data-testid": "drive-more",
 											onPointerDown: rememberMenuOpener,
 											onKeyDown: rememberMenuOpener,
+											onClick: rememberMenuOpener,
 											children: /* @__PURE__ */ jsx(MoreHorizontal, { className: "h-3.5 w-3.5" })
 										})
 									}), /* @__PURE__ */ jsxs(DropdownMenuContent, {
